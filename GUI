@@ -1,0 +1,89 @@
+import tkinter as tk
+from tkinter import messagebox
+
+class ToDoListManager:
+    def __init__(self, master):
+        self.master = master
+        master.title("To-Do List Manager")
+
+        # Create the task entry widget and add it to the GUI
+        self.task_entry = tk.Entry(master, width=50)
+        self.task_entry.grid(row=0, column=0, padx=10, pady=10)
+
+        # Create the add task button and add it to the GUI
+        self.add_task_button = tk.Button(master, text="Add Task", command=self.add_task)
+        self.add_task_button.grid(row=0, column=1, padx=10, pady=10)
+
+        # Create the list box to display the tasks and add it to the GUI
+        self.task_listbox = tk.Listbox(master, height=15, width=50)
+        self.task_listbox.grid(row=1, column=0, padx=10, pady=10)
+
+        # Create the "Mark Completed" button and add it to the GUI
+        self.mark_completed_button = tk.Button(master, text="Mark Completed", command=self.mark_completed)
+        self.mark_completed_button.grid(row=2, column=0, padx=10, pady=10)
+
+        # Create the "Delete Task" button and add it to the GUI
+        self.delete_task_button = tk.Button(master, text="Delete Task", command=self.delete_task)
+        self.delete_task_button.grid(row=2, column=1, padx=10, pady=10)
+
+        # Create the "View Completed Tasks" button and add it to the GUI
+        self.view_completed_button = tk.Button(master, text="View Completed Tasks", command=self.view_completed)
+        self.view_completed_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+
+        # Create a list to hold the tasks
+        self.tasks = []
+        self.completed_tasks = []
+
+
+
+    def add_task(self):
+        task = self.task_entry.get()
+        if task:
+            self.task_listbox.insert(tk.END, task)
+            self.tasks.append(task)
+            self.task_entry.delete(0, tk.END)
+        else:
+            tk.messagebox.showwarning("Empty Task", "Please enter a task to add to the list.")
+
+    def delete_task(self):
+        task_index = self.task_listbox.curselection()
+        if task_index:
+            task = self.task_listbox.get(task_index)
+            self.task_listbox.delete(task_index)
+            self.tasks.remove(task)
+        else:
+            tk.messagebox.showwarning("No Task Selected", "Please select a task to delete from the list.")
+
+    def mark_completed(self):
+        task_index = self.task_listbox.curselection()
+        if task_index:
+            task = self.task_listbox.get(task_index)
+            self.task_listbox.itemconfig(task_index, foreground="grey")
+            self.tasks.remove(task)
+            self.completed_tasks.append(task)
+        else:
+            tk.messagebox.showwarning("No Task Selected", "Please select a task to mark as completed.")
+
+    def view_completed(self):
+        # Create a new window to display the completed tasks
+        completed_window = tk.Toplevel(self.master)
+        completed_window.title("Completed Tasks")
+
+        # Create the list box to display the completed tasks
+        completed_task_listbox = tk.Listbox(completed_window, height=15, width=50)
+        completed_task_listbox.pack(padx=10, pady=10)
+
+        # Add the completed tasks to the list box
+        if self.completed_tasks:
+            for task in self.completed_tasks:
+                completed_task_listbox.insert(tk.END, task)
+        else:
+            completed_task_listbox.insert(tk.END, "No completed tasks yet.")
+
+        # Create a button to close the completed tasks window
+        close_button = tk.Button(completed_window, text="Close", command=completed_window.destroy)
+        close_button.pack(pady=10)
+root = tk.Tk()
+todo = ToDoListManager(root)
+root.mainloop()
+
